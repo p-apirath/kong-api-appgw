@@ -1,2 +1,2 @@
-# kong-api-appgw
-
+# KONG API GATEWAY
+**With force redirect http to https**
