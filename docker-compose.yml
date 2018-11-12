@@ -45,7 +45,7 @@ services:
     environment:
       KONG_PG_HOST: "kong-database"
 #      KONG_PROXY_LISTEN: '0.0.0.0:8000, 0.0.0.0:8443 ssl'
-      KONG_PROXY_LISTEN: '0.0.0.0:8443 ssl'
+      KONG_PROXY_LISTEN: '0.0.0.0:8000, 0.0.0.0:8443 ssl'
 #      KONG_ADMIN_LISTEN: '0.0.0.0:8001, 0.0.0.0:8444 ssl'
       KONG_ADMIN_LISTEN: "0.0.0.0:8001"
       KONG_NGINX_HTTP_INCLUDE: "/usr/local/kong/nginx-include.conf"
@@ -65,7 +65,8 @@ services:
       - "8444:8444"
       - "8001:8001"
       - "443:8443"
-      - "80:8000"
+      - "8000:8000"
+      - "80:80"
     volumes:
       - ./kong-data:/usr/local/kong
       - ./nginx-include.conf:/usr/local/kong/nginx-include.conf:ro
