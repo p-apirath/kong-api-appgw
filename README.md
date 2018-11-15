@@ -7,4 +7,4 @@
 How to use
 - git clone https://vca.ais.co.th/ecomos/containers/kong-api-appgw.git
 - docker-compose up -d
-- Konga WebUI for Kong: <DNS/IP>:1337
+- Konga WebUI for Kong: `http://<DNS/Host-IP>:1337`
