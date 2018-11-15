@@ -1,10 +1,10 @@
 # KONG API GATEWAY
 **With force redirect http to https**
-- http direct port: 8080
-- http redirect port: 80
+- http port for direct access app backend pool: 8000
+- http --> https redirect port: 80 --> 443
 - https port: 443
 
 How to use
-- git clone / download
+- git clone https://vca.ais.co.th/ecomos/containers/kong-api-appgw.git
 - docker-compose up -d
-- end
+- Konga WebUI for Kong: <DNS/IP>:1337
