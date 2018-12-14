@@ -70,8 +70,8 @@ services:
       - "8000:8000"
       - "80:80"
     volumes:
-      - ./kong-data:/usr/local/kong
-      # - ./nginx-include.conf:/usr/local/kong/nginx-include.conf:ro
+      - ${PWD}/kong-data:/usr/local/kong
+      # - ${PWD}/nginx-include.conf:/usr/local/kong/nginx-include.conf:ro
 
   konga-prepare:
     image: pantsel/konga:next
