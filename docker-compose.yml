@@ -26,7 +26,7 @@ services:
 
   kong-migration:
     # image: kong:latest
-    image: apirath/kong-appgw:v0.14.1-alpine
+    image: apirath/kong-appgw:latest
     command: "kong migrations up"
     networks:
       - kong-net
@@ -40,7 +40,7 @@ services:
 
   kong:
     # image: kong:latest
-    image: apirath/kong-appgw:v0.14.1-alpine
+    image: apirath/kong-appgw:latest
     restart: always
     networks:
       - kong-net
