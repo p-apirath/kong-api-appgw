@@ -5,6 +5,7 @@ networks:
   driver: bridge
 
 services:
+
   kong-database:
     image: postgres:9.6
     restart: always
