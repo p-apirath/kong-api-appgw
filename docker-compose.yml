@@ -4,6 +4,12 @@ networks:
  kong-net:
   driver: bridge
 
+volumes:
+  kong-database-vol:
+    driver: local
+  kong-vol:
+    driver: local
+
 services:
 
   kong-database:
@@ -22,17 +28,19 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - ${PWD}/postgres-data:/var/lib/postgresql/data
+      # - ${PWD}/postgres-data:/var/lib/postgresql/data
+      - kong-database-vol:/var/lib/postgresql/data
 
   kong-migration:
     # image: kong:latest
-    image: apirath/kong-appgw:v0.14.1-alpine
-    command: "kong migrations up"
+    image: apirath/kong-appgw:v1.0.2-alpine
+    command: "kong migrations bootstrap"
     networks:
       - kong-net
     restart: on-failure
     environment:
-      KONG_PG_HOST: kong-database
+      KONG_DATABASE: "postgres"
+      KONG_PG_HOST: "kong-database"
     links:
       - kong-database
     depends_on:
@@ -40,11 +48,12 @@ services:
 
   kong:
     # image: kong:latest
-    image: apirath/kong-appgw:v0.14.1-alpine
+    image: apirath/kong-appgw:v1.0.2-alpine
     restart: always
     networks:
       - kong-net
     environment:
+      KONG_DATABASE: "postgres"
       KONG_PG_HOST: "kong-database"
 #      KONG_PROXY_LISTEN: '0.0.0.0:8000, 0.0.0.0:8443 ssl'
       KONG_PROXY_LISTEN: '0.0.0.0:8000, 0.0.0.0:8443 ssl'
@@ -68,10 +77,12 @@ services:
       - "8001:8001"
       - "443:8443"
       - "8000:8000"
-      - "80:80"
+      - "80:8080"
     volumes:
-      - ${PWD}/kong-data:/usr/local/kong
-      # - ${PWD}/nginx-include.conf:/usr/local/kong/nginx-include.conf:ro
+      # - "${PWD}/kong-data:/usr/local/kong"
+      - "kong-vol:/usr/local/kong"
+      # - "${PWD}/nginx-include.conf:/usr/local/kong/nginx-include.conf"
+      # - "/etc/localtime:/etc/localtime:ro"
 
   konga-prepare:
     image: pantsel/konga:next

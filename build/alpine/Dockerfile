@@ -1,12 +1,14 @@
 FROM alpine:3.6
 LABEL maintainer="ECOM Team <ecom@ais.co.th>"
 
-ENV KONG_VERSION 0.14.1
-ENV KONG_SHA256 e29937c5117ac2debcffe0d0016996dd5f0c516ef628f1edc029138715981387
+ENV KONG_VERSION 1.0.2
+ENV KONG_SHA256 e15473300f60bee4e59e69115f6adb65356cb67c5b86fb0acc39243d8b4d6613
 ENV KONG_NGINX_HTTP_INCLUDE /usr/local/kong/nginx-include.conf
 
-RUN apk add --no-cache --virtual .build-deps wget tar ca-certificates \
-	&& apk add --no-cache libgcc openssl pcre perl tzdata curl \
+RUN adduser -Su 1337 kong \
+	&& mkdir -p "/usr/local/kong" \
+	&& apk add --no-cache --virtual .build-deps wget tar ca-certificates \
+	&& apk add --no-cache libgcc openssl pcre perl tzdata curl libcap su-exec \
 	&& wget -O kong.tar.gz "https://bintray.com/kong/kong-community-edition-alpine-tar/download_file?file_path=kong-community-edition-$KONG_VERSION.apk.tar.gz" \
 	&& echo "$KONG_SHA256 *kong.tar.gz" | sha256sum -c - \
 	&& tar -xzf kong.tar.gz -C /tmp \
@@ -18,11 +20,15 @@ RUN apk add --no-cache --virtual .build-deps wget tar ca-certificates \
 	&& apk del .build-deps
 
 COPY nginx-include.conf /usr/local/kong/nginx-include.conf
+
 COPY docker-entrypoint.sh /docker-entrypoint.sh
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-EXPOSE 80 8000 8443 8001 8444
+EXPOSE 8000 8443 8001 8444
 
 STOPSIGNAL SIGTERM
 
 CMD ["kong", "docker-start"]
+
+COPY nginx-include.conf /usr/local/kong/nginx-include.conf
