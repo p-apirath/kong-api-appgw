@@ -18,6 +18,7 @@ RUN apk add --no-cache --virtual .build-deps wget tar ca-certificates \
 	&& apk del .build-deps
 
 COPY nginx-include.conf /usr/local/kong/nginx-include.conf
+
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
