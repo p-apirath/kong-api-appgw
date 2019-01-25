@@ -20,7 +20,7 @@ RUN apk add --no-cache --virtual .build-deps wget tar ca-certificates \
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-EXPOSE 80 8000 8443 8001 8444
+EXPOSE 8000 8443 8001 8444
 
 STOPSIGNAL SIGTERM
 
