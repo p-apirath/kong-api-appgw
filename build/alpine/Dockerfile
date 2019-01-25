@@ -3,6 +3,7 @@ LABEL maintainer="ECOM Team <ecom@ais.co.th>"
 
 ENV KONG_VERSION 1.0.2
 ENV KONG_SHA256 e15473300f60bee4e59e69115f6adb65356cb67c5b86fb0acc39243d8b4d6613
+ENV KONG_NGINX_HTTP_INCLUDE /usr/local/kong/nginx-include.conf
 
 RUN adduser -Su 1337 kong \
 	&& mkdir -p "/usr/local/kong" \
@@ -29,3 +30,5 @@ EXPOSE 80 8000 8443 8001 8444
 STOPSIGNAL SIGTERM
 
 CMD ["kong", "docker-start"]
+
+COPY nginx-include.conf /usr/local/kong/nginx-include.conf
