@@ -31,8 +31,8 @@ services:
       - kong-database-vol:/var/lib/postgresql/data
 
   kong-migration:
-    # image: kong:latest
-    image: apirath/kong-appgw:v0.14.1-alpine
+    image: kong:latest
+    # image: apirath/kong-appgw:v0.14.1-alpine
     command: "kong migrations up"
     networks:
       - kong-net
@@ -46,8 +46,8 @@ services:
       - kong-database
 
   kong:
-    # image: kong:latest
-    image: apirath/kong-appgw:v0.14.1-alpine
+    image: kong:latest
+    # image: apirath/kong-appgw:v0.14.1-alpine
     restart: always
     networks:
       - kong-net
