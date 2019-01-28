@@ -85,7 +85,7 @@ services:
       # - "/etc/localtime:/etc/localtime:ro"
 
   konga-prepare:
-    image: pantsel/konga:next
+    image: pantsel/konga:0.13.0
     command: "-c prepare -a postgres -u postgresql://kong@kong-database:5432/konga_db"
     networks:
       - kong-net
@@ -96,7 +96,7 @@ services:
       - kong-database
 
   konga:
-    image: pantsel/konga:next
+    image: pantsel/konga:0.13.0
     restart: always
     networks:
         - kong-net
