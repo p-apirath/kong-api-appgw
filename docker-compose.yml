@@ -28,6 +28,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
+    # - ${PWD}/postgres-data:/var/lib/postgresql/data
       - kong-database-vol:/var/lib/postgresql/data
 
   kong-migration:
