@@ -78,6 +78,7 @@ services:
       - "8000:8000"
       - "80:8080"
     volumes:
+      # - "${PWD}/kong-data:/usr/local/kong"
       - "kong-vol:/usr/local/kong"
       # - "${PWD}/nginx-include.conf:/usr/local/kong/nginx-include.conf"
       # - "/etc/localtime:/etc/localtime:ro"
