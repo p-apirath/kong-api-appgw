@@ -1,29 +1,23 @@
 FROM centos:7
-LABEL maintainer="Kong Core Team <team-core@konghq.com>"
+LABEL maintainer="ECOM Team <ecom@ais.co.th>"
 
-ENV KONG_VERSION 1.0.2
+ENV KONG_VERSION 1.0.0rc3
+ENV KONG_NGINX_HTTP_INCLUDE /usr/local/kong/nginx-include.conf
 
-ARG SU_EXEC_VERSION=0.2
-ARG SU_EXEC_URL="https://github.com/ncopa/su-exec/archive/v${SU_EXEC_VERSION}.tar.gz"
+RUN yum install -y wget https://bintray.com/kong/kong-community-edition-rpm/download_file?file_path=centos/7/kong-community-edition-$KONG_VERSION.el7.noarch.rpm && \
+    yum clean all && \
+    # OpenShift specific. OpenShift runs containers using an arbitrarily assigned user ID.
+    # This user doesn't have access to change file permissions during runtime, they have to be changed during image building.
+    # https://docs.okd.io/latest/creating_images/guidelines.html#use-uid
+    mkdir -p "/usr/local/kong" && \
+    chgrp -R 0 "/usr/local/kong" && \
+    chmod -R g=u "/usr/local/kong"
 
-RUN yum install -y -q gcc make \
-&& curl -sL "${SU_EXEC_URL}" | tar -C /tmp -zxf - \
-&& make -C "/tmp/su-exec-${SU_EXEC_VERSION}" \
-&& cp "/tmp/su-exec-${SU_EXEC_VERSION}/su-exec" /usr/bin \
-&& rm -fr "/tmp/su-exec-${SU_EXEC_VERSION}" \
-&& yum autoremove -y -q gcc make \
-&& yum clean all -q \
-&& rm -fr /var/cache/yum/* /tmp/yum_save*.yumtx /root/.pki
-
-RUN useradd --uid 1337 kong \
-    && yum install -y https://bintray.com/kong/kong-community-edition-rpm/download_file?file_path=centos/7/kong-community-edition-$KONG_VERSION.el7.noarch.rpm \
-    && yum clean all
-
+COPY nginx-include.conf /usr/local/kong/nginx-include.conf
 COPY docker-entrypoint.sh /docker-entrypoint.sh
-
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-EXPOSE 8000 8443 8001 8444
+EXPOSE 80 8000 8443 8001 8444
 
 STOPSIGNAL SIGTERM
 
