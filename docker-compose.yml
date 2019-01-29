@@ -13,7 +13,7 @@ volumes:
 services:
 
   kong-database:
-    image: postgres:9.5
+    image: postgres:9.6
     restart: always
     networks:
       - kong-net
