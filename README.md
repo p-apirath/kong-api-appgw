@@ -13,6 +13,6 @@ kong-api with force redirect http to https and konga as admin UI for kong
 - konga is kong WebUI for admin management
 
 How to use
-- git clone [this repo](./)
+- git clone [this repo](.)
 - docker-compose up -d
 - Konga WebUI: http://<DNS/Host/IP>:1337
