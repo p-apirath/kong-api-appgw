@@ -6,6 +6,8 @@ services:
     environment:
       POSTGRES_DB: "kong"
       POSTGRES_USER: "kong"
+      POSTGRES_PASSWORD: "kong"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
       PGDATA: "/data"
     # ports:
     #   - "5432:5432/tcp"
