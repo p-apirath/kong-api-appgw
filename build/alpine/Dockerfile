@@ -1,7 +1,6 @@
 FROM alpine:3.11
 
 LABEL maintainer="Apirath Promyan <gamez.apirath.promyan@gmail.com>"
-ENV KONG_NGINX_HTTP_INCLUDE /usr/local/kong/nginx-include.conf
 
 ARG BINTRAY_USER
 ENV BINTRAY_USER $BINTRAY_USER
@@ -38,13 +37,11 @@ RUN apk add --no-cache libgcc openssl pcre perl tzdata libcap zip bash \
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
-COPY nginx-include.conf /usr/local/kong/nginx-include.conf
-
 USER kong
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-EXPOSE 8000 8443 8001 8444 8080
+EXPOSE 8000 8443 8001 8444
 
 STOPSIGNAL SIGQUIT
 

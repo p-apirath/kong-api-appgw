@@ -29,8 +29,6 @@ services:
         condition: "on-failure"
     networks:
       - "kong-net"
-    # ports:
-    #   - "5432:5432/tcp"
     volumes:
       - kong_data:/var/lib/postgresql/data
 
@@ -92,7 +90,7 @@ services:
       KONG_PROXY_ACCESS_LOG: /dev/stdout
       KONG_PROXY_ERROR_LOG: /dev/stderr
       KONG_PROXY_LISTEN: '0.0.0.0:8000, 0.0.0.0:8443 ssl'
-      KONG_NGINX_HTTP_INCLUDE: "/usr/local/kong/nginx-include.conf"
+      # KONG_NGINX_HTTP_INCLUDE: "/usr/local/kong/nginx-include.conf"
     secrets:
       - kong_postgres_password
     networks:
@@ -102,7 +100,6 @@ services:
       - "127.0.0.1:8001:8001/tcp"
       - "443:8443/tcp"
       - "127.0.0.1:8444:8444/tcp"
-      - "80:8080/tcp"
     healthcheck:
       test: ["CMD", "kong", "health"]
       interval: 10s
@@ -113,8 +110,8 @@ services:
       restart_policy:
         condition: "always"
     volumes:
-      - "./nginx-include.conf:/usr/local/kong/nginx-include.conf"
-      # - "/etc/localtime:/etc/localtime:ro"
+      # - "./nginx-include.conf:/usr/local/kong/nginx-include.conf"
+      - "/etc/localtime:/etc/localtime:ro"
 
   konga-prepare:
     image: "pantsel/konga:latest"
