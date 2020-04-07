@@ -35,7 +35,7 @@ services:
       - kong_data:/var/lib/postgresql/data
 
   kong-migration:
-    image: "${KONG_DOCKER_TAG:-kong:latest}"
+    image: "${KONG_DOCKER_TAG:-apirath/kong-appgw:latest}"
     command: kong migrations bootstrap
     depends_on:
       - "kongdb"
@@ -55,7 +55,7 @@ services:
         condition: "on-failure"
 
   kong-migrations-up:
-    image: "${KONG_DOCKER_TAG:-kong:latest}"
+    image: "${KONG_DOCKER_TAG:-apirath/kong-appgw:latest}"
     command: kong migrations up && kong migrations finish
     depends_on:
       - "kong-migration"
@@ -75,7 +75,7 @@ services:
         condition: "on-failure"
 
   kong:
-    image: "${KONG_DOCKER_TAG:-kong:latest}"
+    image: "${KONG_DOCKER_TAG:-apirath/kong-appgw:latest}"
     user: "${KONG_USER:-kong}"
     depends_on:
       - "kong-migrations-up"
