@@ -35,7 +35,7 @@ services:
       - kong_data:/var/lib/postgresql/data
 
   kong-migration:
-    image: "${KONG_DOCKER_TAG:-apirath/kong-appgw:latest}"
+    image: "${KONG_DOCKER_TAG:-apirath/kong-appgw:v2.0.3-alpine}"
     command: kong migrations bootstrap
     depends_on:
       - "kongdb"
@@ -55,7 +55,7 @@ services:
         condition: "on-failure"
 
   kong-migrations-up:
-    image: "${KONG_DOCKER_TAG:-apirath/kong-appgw:latest}"
+    image: "${KONG_DOCKER_TAG:-apirath/kong-appgw:v2.0.3-alpine}"
     command: kong migrations up && kong migrations finish
     depends_on:
       - "kong-migration"
@@ -75,7 +75,7 @@ services:
         condition: "on-failure"
 
   kong:
-    image: "${KONG_DOCKER_TAG:-apirath/kong-appgw:latest}"
+    image: "${KONG_DOCKER_TAG:-apirath/kong-appgw:v2.0.3-alpine}"
     user: "${KONG_USER:-kong}"
     depends_on:
       - "kong-migrations-up"
@@ -117,7 +117,7 @@ services:
       # - "/etc/localtime:/etc/localtime:ro"
 
   konga-prepare:
-    image: "pantsel/konga:latest"
+    image: "pantsel/konga:0.14.7"
     command: "-c prepare -a postgres -u postgresql://kong@kongdb:5432/konga"
     networks:
       - "kong-net"
@@ -129,7 +129,7 @@ services:
       - "kongdb"
 
   konga:
-    image: "pantsel/konga:latest"
+    image: "pantsel/konga:0.14.7"
     environment:
       # TOKEN_SECRET: km1GUr4RkcQD7DewhJPNXrCuZwcKmqjb
       DB_ADAPTER: postgres
