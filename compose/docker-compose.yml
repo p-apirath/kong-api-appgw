@@ -100,7 +100,6 @@ services:
       - "127.0.0.1:8001:8001/tcp"
       - "443:8443/tcp"
       - "127.0.0.1:8444:8444/tcp"
-      - "80:8080/tcp"
     healthcheck:
       test: ["CMD", "kong", "health"]
       interval: 10s
