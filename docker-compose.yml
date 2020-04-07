@@ -16,10 +16,12 @@ services:
     image: "postgres:alpine"
     restart: always
     networks:
-      - kong-net
+      - "kong-net"
     environment:
       POSTGRES_DB: kong
       POSTGRES_USER: kong
+      POSTGRES_PASSWORD: kong
+      POSTGRES_HOST_AUTH_METHOD: trust
     # ports:
     #   - "5432:5432/tcp"
     healthcheck:
@@ -28,29 +30,29 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - kong-database-vol:/var/lib/postgresql/data
+      - "kong-database-vol:/var/lib/postgresql/data"
 
   kong-migration:
     # image: kong:latest
-    image: apirath/kong-appgw:v0.14.1-alpine
+    image: "apirath/kong-appgw:v0.14.1-alpine"
     command: "kong migrations up"
     networks:
-      - kong-net
-    restart: on-failure
+      - "kong-net"
+    restart: "on-failure"
     environment:
       KONG_DATABASE: "postgres"
       KONG_PG_HOST: "kong-database"
     links:
-      - kong-database
+      - "kong-database"
     depends_on:
-      - kong-database
+      - "kong-database"
 
   kong:
     # image: kong:latest
-    image: apirath/kong-appgw:v0.14.1-alpine
-    restart: always
+    image: "apirath/kong-appgw:v0.14.1-alpine"
+    restart: "always"
     networks:
-      - kong-net
+      - "kong-net"
     environment:
       KONG_PG_HOST: "kong-database"
       KONG_PROXY_LISTEN: '0.0.0.0:8000, 0.0.0.0:8443 ssl'
@@ -61,8 +63,8 @@ services:
       KONG_ADMIN_ACCESS_LOG: "/dev/stdout"
       KONG_ADMIN_ERROR_LOG: "/dev/stderr"
     depends_on:
-      - kong-migration
-      - kong-database
+      - "kong-migration"
+      - "kong-database"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://kong:8001"]
       interval: 5s
@@ -80,21 +82,21 @@ services:
       # - "/etc/localtime:/etc/localtime:ro"
 
   konga-prepare:
-    image: pantsel/konga:0.13.0
+    image: "pantsel/konga:0.13.0"
     command: "-c prepare -a postgres -u postgresql://kong@kong-database:5432/konga_db"
     networks:
-      - kong-net
-    restart: on-failure
+      - "kong-net"
+    restart: "on-failure"
     links:
-      - kong-database
+      - "kong-database"
     depends_on:
-      - kong-database
+      - "kong-database"
 
   konga:
-    image: pantsel/konga:0.13.0
-    restart: always
+    image: "pantsel/konga:0.13.0"
+    restart: "always"
     networks:
-        - kong-net
+        - "kong-net"
     environment:
       DB_ADAPTER: postgres
       DB_HOST: kong-database
