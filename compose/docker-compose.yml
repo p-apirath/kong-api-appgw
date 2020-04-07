@@ -90,7 +90,7 @@ services:
       KONG_PROXY_ACCESS_LOG: /dev/stdout
       KONG_PROXY_ERROR_LOG: /dev/stderr
       KONG_PROXY_LISTEN: '0.0.0.0:8000, 0.0.0.0:8443 ssl'
-      KONG_NGINX_HTTP_INCLUDE: "/usr/local/kong/nginx-include.conf"
+      # KONG_NGINX_HTTP_INCLUDE: "/usr/local/kong/nginx-include.conf"
     secrets:
       - kong_postgres_password
     networks:
@@ -110,7 +110,7 @@ services:
       restart_policy:
         condition: "always"
     volumes:
-      - "./nginx-include.conf:/usr/local/kong/nginx-include.conf"
+      # - "./nginx-include.conf:/usr/local/kong/nginx-include.conf"
       - "/etc/localtime:/etc/localtime:ro"
 
   konga-prepare:
