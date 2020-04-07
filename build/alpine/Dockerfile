@@ -1,30 +1,51 @@
-FROM alpine:3.6
-LABEL maintainer="ECOM Team <ecom@ais.co.th>"
+FROM alpine:3.11
 
-ENV KONG_VERSION 0.14.1
-ENV KONG_SHA256 e29937c5117ac2debcffe0d0016996dd5f0c516ef628f1edc029138715981387
+LABEL maintainer="Apirath Promyan <gamez.apirath.promyan@gmail.com>"
 ENV KONG_NGINX_HTTP_INCLUDE /usr/local/kong/nginx-include.conf
 
-RUN apk add --no-cache --virtual .build-deps wget tar ca-certificates \
-	&& apk add --no-cache libgcc openssl pcre perl tzdata curl \
-	&& wget -O kong.tar.gz "https://bintray.com/kong/kong-community-edition-alpine-tar/download_file?file_path=kong-community-edition-$KONG_VERSION.apk.tar.gz" \
-	&& echo "$KONG_SHA256 *kong.tar.gz" | sha256sum -c - \
-	&& tar -xzf kong.tar.gz -C /tmp \
-	&& rm -f kong.tar.gz \
-	&& cp -R /tmp/usr / \
-	&& rm -rf /tmp/usr \
-	&& cp -R /tmp/etc / \
-	&& rm -rf /tmp/etc \
-	&& apk del .build-deps
+ARG BINTRAY_USER
+ENV BINTRAY_USER $BINTRAY_USER
+
+ARG BINTRAY_KEY
+ENV BINTRAY_KEY $BINTRAY_KEY
+
+ARG BUILD_SCRIPT=build-ce.sh
+COPY $BUILD_SCRIPT /tmp/build.sh
+
+ARG ASSET_LOCATION=bintray
+ENV ASSET_LOCATION $ASSET_LOCATION
+
+ARG LOCAL_KONG_PACKAGE=empty-kong.tar.gz
+COPY $LOCAL_KONG_PACKAGE /tmp/kong.tar.gz
+
+RUN if [ "$ASSET_LOCATION" = "local" ] ; then exit 0 ; fi; \
+    apk add --no-cache --virtual .build-deps curl wget tar ca-certificates && \
+    . /tmp/build.sh && \
+    apk del .build-deps
+
+RUN mkdir /kong; \
+	tar -C /kong -xzf /tmp/kong.tar.gz && \
+	mv /kong/usr/local/* /usr/local && \
+	mv /kong/etc/* /etc && \
+	rm -rf /kong
+
+RUN apk add --no-cache libgcc openssl pcre perl tzdata libcap zip bash \
+    && adduser -S kong \
+    && mkdir -p "/usr/local/kong" \
+	&& chown -R kong:0 /usr/local/kong \
+	&& chown kong:0 /usr/local/bin/kong \
+	&& chmod -R g=u /usr/local/kong
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
+COPY nginx-include.conf /usr/local/kong/nginx-include.conf
+
+USER kong
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-EXPOSE 8000 8443 8001 8444
+EXPOSE 8000 8443 8001 8444 8080
 
-STOPSIGNAL SIGTERM
+STOPSIGNAL SIGQUIT
 
 CMD ["kong", "docker-start"]
-
-COPY nginx-include.conf /usr/local/kong/nginx-include.conf

@@ -1,7 +1,6 @@
-ARG RESTY_IMAGE_BASE="centos"
-ARG RESTY_IMAGE_TAG="7"
+ARG RESTY_IMAGE_BASE="ubuntu"
+ARG RESTY_IMAGE_TAG="xenial"
 FROM ${RESTY_IMAGE_BASE}:${RESTY_IMAGE_TAG}
-LABEL maintainer="Kong <support@konghq.com>"
 
 ARG BINTRAY_USER
 ENV BINTRAY_USER $BINTRAY_USER
@@ -15,21 +14,23 @@ COPY $BUILD_SCRIPT /tmp/build.sh
 ARG ASSET_LOCATION=bintray
 ENV ASSET_LOCATION $ASSET_LOCATION
 
-ARG LOCAL_KONG_PACKAGE=empty-kong.rpm
-COPY $LOCAL_KONG_PACKAGE /tmp/kong.rpm
+ARG LOCAL_KONG_PACKAGE=empty-kong.deb
+COPY $LOCAL_KONG_PACKAGE /tmp/kong.deb
 
 RUN if [ "$ASSET_LOCATION" = "local" ] ; then exit 0 ; fi; \
-    . /tmp/build.sh
+    apt-get update \
+    && apt-get install -y curl && \
+    . /tmp/build.sh && \
+    apt-get purge -yf curl
 
-RUN yum install -y -q unzip shadow-utils \
-	&& yum clean all -q \
-	&& rm -fr /var/cache/yum/* /tmp/yum_save*.yumtx /root/.pki
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends perl unzip \
+    && rm -rf /var/lib/apt/lists/* \
+	&& dpkg -i /tmp/kong.deb \
+	&& rm -rf /tmp/kong.deb
 
-RUN useradd kong \
-	&& mkdir -p "/usr/local/kong" \
-	&& yum install -y /tmp/kong.rpm \
-	&& yum clean all \
-	&& rm /tmp/kong.rpm \
+RUN useradd -ms /bin/bash kong \
+    && mkdir -p "/usr/local/kong" \
 	&& chown -R kong:0 /usr/local/kong \
 	&& chown kong:0 /usr/local/bin/kong \
 	&& chmod -R g=u /usr/local/kong
@@ -37,6 +38,8 @@ RUN useradd kong \
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 USER kong
+
+RUN kong version
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 

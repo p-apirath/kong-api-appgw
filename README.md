@@ -1,5 +1,6 @@
 # KONG API GATEWAY
-kong-api with force redirect http to https and konga as admin UI for kong   
+kong-api with force redirect http to https and konga as admin UI for kong-alpine
+- kong support postgres:9.6 only
 - kong port list:
   - port `8080` force redirect to `443`
   - port `8000` direct to backend with http only
@@ -14,5 +15,6 @@ kong-api with force redirect http to https and konga as admin UI for kong
 
 How to use
 - git clone [this repo]()
+- cd compose
 - docker-compose up -d
 - Konga WebUI: http://<DNS/Host/IP>:1337
